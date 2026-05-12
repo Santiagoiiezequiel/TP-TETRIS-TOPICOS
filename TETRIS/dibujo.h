@@ -10,6 +10,8 @@
 void dibujar(const uint8_t dibujo[][PIXELES_X_LADO], uint16_t oX, uint16_t oY);
 void dibujar_bloque(int x, int y, int ancho, int alto, int color) ;
 void escribir_texto(int x, int y, const char* texto, int color);
-void dibujarmapa(tJuego *juego,int** tablero);
+void dibujarmapa(tJuego *juego,int** tablero,int ancho,int alto);
+void dibujar_marco(int x, int y , int ancho,int alto , int color);
+void dibujarPieza(tPieza *p);
 
 #endif // DIBUJO_H_INCLUDED

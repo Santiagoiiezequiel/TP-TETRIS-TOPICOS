@@ -11,8 +11,10 @@
 #define ESCALA_VENTANA 1
 #define CANT_COLORES 16
 #define TAM_GRILLA 11
-#define COL 2
-#define FILAS 2
+#define COL 10
+#define FILAS 20
+#define LIMITE_IZQUIERDO 0
+#define LIMITE_DERECHO 7
 
 tGBT_ColorRGB paletaCGA[CANT_COLORES] =
 {
@@ -66,19 +68,33 @@ int main(int argc, char *argv[])
     }
 
     tJuego juego;
+    tPieza pieza;
     //tPartida partida;
     uint16_t offsetX =  0;
     uint16_t offsetY = 0;
 
-    int *tablero[FILAS];
+    //int *tablero[FILAS];
 
+    /*
     for(int i = 0; i < FILAS; i++)
     {
         tablero[i] = malloc(sizeof(int) * COL);
+        if(!tablero)
+            printf("\nNo se pudo reservar memoria ");
 
         // inicializar en 0
         for(int j = 0; j < COL; j++)
             tablero[i][j] = 0;
+    }
+    */
+
+    int **tablero;
+
+    tablero = malloc(sizeof(int*) * FILAS);
+
+    for(int i = 0; i < FILAS; i++)
+    {
+        tablero[i] = malloc(sizeof(int) * COL);
     }
 
     if (gbt_iniciar() != 0)
@@ -131,29 +147,36 @@ int main(int argc, char *argv[])
         //menuInicial(&juego, &partida);
 
         gbt_procesar_entrada();
-        if(gbt_tecla_presionada(GBTK_w))
+
+
+        if(juego.instancia == MENU)
         {
-            juego.opcionMenu--;
-            // Si se pasa del mínimo (0), salta al máximo (3)
-            if(juego.opcionMenu < 0)
+            renderMenu(&juego);
+            if(gbt_tecla_presionada(GBTK_w))
             {
-                juego.opcionMenu = 3;
+                juego.opcionMenu--;
+                if(juego.opcionMenu < 0)
+                {
+                    juego.opcionMenu = 3;
+                }
+            }
+
+            if(gbt_tecla_presionada(GBTK_s))
+            {
+                juego.opcionMenu++;
+                // Si se pasa del máximo (3), vuelve al inicio (0)
+                if(juego.opcionMenu > 3)
+                {
+                    juego.opcionMenu = 0;
+                }
             }
         }
 
-        if(gbt_tecla_presionada(GBTK_s))
-        {
-            juego.opcionMenu++;
-            // Si se pasa del máximo (3), vuelve al inicio (0)
-            if(juego.opcionMenu > 3)
-            {
-                juego.opcionMenu = 0;
-            }
-        }
 
-        renderMenu(&juego);
+        int estadoTecla = gbt_tecla_presionada(GBTK_ENTER);
+
         // Suponiendo que tu menú tiene este orden visual:
-    // 0: JUGAR, 1: CONFIG, 2: RANK, 3: SALIR
+        // 0: JUGAR, 1: CONFIG, 2: RANK, 3: SALIR
         if(gbt_tecla_presionada(GBTK_ENTER))
         {
             printf("ENTER detectado! Opcion actual: %d\n", juego.opcionMenu);
@@ -161,8 +184,8 @@ int main(int argc, char *argv[])
             {
             case 0: // JUGAR
                 juego.instancia = JUGANDO;
-                dibujarmapa(&juego,tablero);
-
+                iniciarJuego(&juego,tablero);
+                crearPieza(&pieza);
                 // Aquí podrías resetear el juego o cambiar de pantalla
                 break;
             case 1: // CONFIG
@@ -173,22 +196,60 @@ int main(int argc, char *argv[])
                 break;
             }
         }
-
-        /*
-        if(juego.instancia == CONFIG)
-            menuConfig(&juego, &partida);
-
-        if(juego.instancia == JUGANDO)
+        else if (juego.instancia == JUGANDO)
         {
-            dibujar(&juego, tablero);
+            // 3. Si el estado cambió, el menú ya no se dibuja más
+            // Y ahora solo se dibuja el mapa de forma constante
+            dibujarmapa(&juego,tablero,ancho,alto);
+            dibujarPieza(&pieza);
+
+            if (gbt_temporizador_consumir(temporizador))
+            {
+                pieza.py++;
+
+            }
+            if(gbt_tecla_sostenida(GBTK_ABAJO))
+            {
+                pieza.py++;
+            }
+
+            if(gbt_tecla_presionada(GBTK_ARRIBA))
+            {
+
+            }
+
+            if(gbt_tecla_presionada(GBTK_DERECHA))
+            {
+                // Solo sumamos si no hemos llegado al borde derecho
+                if (pieza.px < LIMITE_DERECHO)
+                {
+                    pieza.px++;
+                }
+            }
+
+            if(gbt_tecla_presionada(GBTK_IZQUIERDA))
+            {
+                // Solo restamos si no hemos llegado al borde izquierdo
+                if (pieza.px > LIMITE_IZQUIERDO)
+                {
+                    pieza.px--;
+                }
+            }
+
         }
-        */
+
         if(gbt_tecla_presionada(GBTK_ESCAPE))
         {
             corriendo=0;
         }
     }
 
+    for(int i = 0; i < FILAS; i++)
+    {
+        free(tablero[i]);
+    }
+
+    free(tablero);
 
     gbt_temporizador_destruir(temporizador);
     gbt_destruir_ventana();

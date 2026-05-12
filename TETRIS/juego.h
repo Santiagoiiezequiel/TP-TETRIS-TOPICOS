@@ -1,6 +1,6 @@
 #ifndef JUEGO_H_INCLUDED
 #define JUEGO_H_INCLUDED
-
+#include "GBT/gbt.h"
 #define JUGANDO 0
 #define MENU 5
 #define CONFIG 1
@@ -14,6 +14,11 @@ typedef struct
     int instancia;
     int ancho_v;
     int alto_v;
+    int puntaje;
+    int nivel;
+    int lineas;
+    //tPieza *pieza;
+
 }tJuego;
 /*
 typedef struct
@@ -38,5 +43,8 @@ typedef struct
 
 void crearPieza(tPieza *p);
 void renderMenu(tJuego *juego);
-
+//void iniciarJuego(tJuego *juego, int** tablero);
+void generarNuevoTetramino(tPieza *p);
+void iniciarJuego(tJuego *juego, int** tablero);
 #endif // JUEGO_H_INCLUDED
+
