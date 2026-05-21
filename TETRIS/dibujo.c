@@ -239,12 +239,12 @@ void dibujarPieza(tPieza *p) {
     int offsetX = 120; // El mismo margen que uses para el tablero
     int offsetY = 30;
 
-    for(int i = 0; i < 4; i++) {
-        for(int j = 0; j < 4; j++) {
-            if(p->forma[i][j]) {
+    for(int i = 0; i < p->tam; i++) {
+        for(int j = 0; j < p->tam; j++) {
+            if(p->matriz[i][j]) {
                 int x = offsetX + (p->px + j) * 8;
                 int y = offsetY + (p->py + i) * 8;
-                dibujar_bloque(x, y, 7, 7, 14); // 7x7 para que se vea el borde
+                dibujar_bloque(x, y, 7, 7, p->color); // 7x7 para que se vea el borde
 
             }
         }

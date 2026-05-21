@@ -38,7 +38,8 @@ typedef struct
     int forma[4][4];
     int px;
     int py;
-
+    int tam;           // Tamaño de su matriz cuadrada (2, 3 o 4)
+    int **matriz;
 }tPieza;
 
 void crearPieza(tPieza *p);
@@ -46,5 +47,8 @@ void renderMenu(tJuego *juego);
 //void iniciarJuego(tJuego *juego, int** tablero);
 void generarNuevoTetramino(tPieza *p);
 void iniciarJuego(tJuego *juego, int** tablero);
+void rotar_pieza(tPieza *p,int** tablero);
+int comprobar_colision(int x, int y, int **matriz, int tam, int **tablero);
+void fijar_pieza(tPieza *p, int **tablero);
 #endif // JUEGO_H_INCLUDED
 

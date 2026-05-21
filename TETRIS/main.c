@@ -9,7 +9,7 @@
 #define ANCHO_VENTANA 320
 #define ALTO_VENTANA 200
 #define ESCALA_VENTANA 1
-#define CANT_COLORES 16
+#define CANT_COLORES 17
 #define TAM_GRILLA 11
 #define COL 10
 #define FILAS 20
@@ -35,7 +35,9 @@ tGBT_ColorRGB paletaCGA[CANT_COLORES] =
     {0xFF, 0x55, 0x55}, // 12:  Rojo brillante
     {0xFF, 0x55, 0xFF}, // 13:  Magenta brillante
     {0xFF, 0xFF, 0x55}, // 14:  Amarillo
-    {0xFF, 0xFF, 0xFF}  // 15:  Usado como transparente por GBT
+    {0xFF, 0x66, 0x00}, // Naranja intenso
+    {0xFF, 0xFF, 0xFF}  // 16:  Usado como transparente por GBT
+
 };
 
 
@@ -95,6 +97,11 @@ int main(int argc, char *argv[])
     for(int i = 0; i < FILAS; i++)
     {
         tablero[i] = malloc(sizeof(int) * COL);
+
+        for(int j = 0; j < COL; j++)
+        {
+            tablero[i][j] = 0;
+        }
     }
 
     if (gbt_iniciar() != 0)
@@ -202,7 +209,13 @@ int main(int argc, char *argv[])
             // Y ahora solo se dibuja el mapa de forma constante
             dibujarmapa(&juego,tablero,ancho,alto);
             dibujarPieza(&pieza);
+            /*
+            if(comprobar_colision(50,10,pieza.matriz,pieza.tam,tablero))
+            {
+                fijar_pieza(&pieza,tablero);
 
+            }
+            */
             if (gbt_temporizador_consumir(temporizador))
             {
                 pieza.py++;
@@ -215,7 +228,8 @@ int main(int argc, char *argv[])
 
             if(gbt_tecla_presionada(GBTK_ARRIBA))
             {
-
+                rotar_pieza(&pieza,tablero);
+                dibujarPieza(&pieza);
             }
 
             if(gbt_tecla_presionada(GBTK_DERECHA))
