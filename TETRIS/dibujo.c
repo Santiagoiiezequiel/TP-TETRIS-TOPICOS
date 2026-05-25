@@ -5,6 +5,8 @@
 #include <string.h>
 #define ALTO_VENTANA 200
 #define ESCALA_VENTANA 1
+#define COL 10
+#define FILAS 20
 
 unsigned char fuente[256][5][5] =
 {
@@ -235,29 +237,32 @@ void dibujar_marco(int x, int y , int ancho,int alto , int color)
 
 
 
-void dibujarPieza(tPieza *p) {
-    int offsetX = 120; // El mismo margen que uses para el tablero
-    int offsetY = 30;
+void dibujarPieza(tPieza *p, int ancho, int alto) {
+    // Calculamos el mismo offset dinámico que el mapa
+    int pozo_ancho = 80;
+    int pozo_alto = 160;
+
+    int offsetX = (ancho - pozo_ancho) / 2;
+    int offsetY = (alto - pozo_alto) / 2;
 
     for(int i = 0; i < p->tam; i++) {
         for(int j = 0; j < p->tam; j++) {
             if(p->matriz[i][j]) {
                 int x = offsetX + (p->px + j) * 8;
                 int y = offsetY + (p->py + i) * 8;
-                dibujar_bloque(x, y, 7, 7, p->color); // 7x7 para que se vea el borde
 
+                // Mismo tamaño 7x7
+                dibujar_bloque(x, y, 7, 7, p->color);
             }
         }
-
     }
-gbt_volcar_backbuffer();
 }
 
 
 void dibujarmapa(tJuego *juego, int** tablero,int ancho,int alto)
 {
     // 1. Limpiamos con el color de fondo (por ejemplo, 0 para negro o el que quieras)
-    gbt_borrar_backbuffer(0);
+    //gbt_borrar_backbuffer(0);
 
 
     // Calculamos el centro para el pozo
@@ -269,27 +274,20 @@ void dibujarmapa(tJuego *juego, int** tablero,int ancho,int alto)
 
     dibujar_marco(offsetX - 2, offsetY - 2, pozo_ancho + 4, pozo_alto + 4, 5);
 
-    /*
-    dibujar_bloque_estadisticas();
-    dibujar_bloque_next();
-    dibujar_score();
+    for(int f = 0; f < FILAS; f++)
+    {
+        for(int c = 0; c < COL; c++)
+        {
+            if(tablero[f][c] != 0)
+            {
+                int x = offsetX + (c * 8);
+                int y = offsetY + (f * 8);
 
-
-    for(int f = 0; f < 20; f++) {
-        for(int c = 0; c < 10; c++) {
-            if(tablero[f][c] != 0) {
-                // Dibujamos un bloque en la posición relativa
-                dibujar_bloque(offsetX + (c * 8), offsetY + (f * 8), tablero[f][c]);
+                dibujar_bloque(x,y,7,7,tablero[f][c]);
             }
         }
     }
-    */
-    // 2. Dibujamos TODO lo que pertenece al juego
-    //dibujar_bloque(50, 5, 60, 15, 5);
-    // Aquí iría el dibujo del tablero, piezas, etc.
 
-    // 3. RECIÉN AQUÍ volcamos todo junto a la pantalla física
-    //gbt_volcar_backbuffer();
 }
 
 void dibujar(const uint8_t dibujo[][PIXELES_X_LADO], uint16_t oX, uint16_t oY)

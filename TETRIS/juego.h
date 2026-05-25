@@ -17,6 +17,8 @@ typedef struct
     int puntaje;
     int nivel;
     int lineas;
+    int piezas_caidas;
+    float velocidad_actual;
     //tPieza *pieza;
 
 }tJuego;
@@ -50,5 +52,6 @@ void iniciarJuego(tJuego *juego, int** tablero);
 void rotar_pieza(tPieza *p,int** tablero);
 int comprobar_colision(int x, int y, int **matriz, int tam, int **tablero);
 void fijar_pieza(tPieza *p, int **tablero);
+int verificar_y_limpiar_lineas_punteros(int **tablero, int ancho, int alto, tJuego *juego);
 #endif // JUEGO_H_INCLUDED
 

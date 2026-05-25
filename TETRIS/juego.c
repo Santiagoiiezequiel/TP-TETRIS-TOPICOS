@@ -8,59 +8,56 @@
 #define LIMITE_IZQUIERDO 0
 #define LIMITE_DERECHO 7
 
-static const int tetrominos[7][4][4] =
-{
-   // 0: I (Barra) -> tam = 4 (Ocupa una fila completa pegada arriba para rotar bien)
-    {
-        {0, 1, 0, 0},
-        {0, 1, 0, 0},
-        {0, 1, 0, 0},
-        {0, 1, 0, 0}
-    },
-    // 1: O (Cuadrado) -> tam = 2 (Metido exacto en el cuadrante 2x2 superior izquierdo)
+int tetrominos[7][4][4] = {
+    // 0: Barra (I) -> Requiere 4x4 de espacio real para girar bien
     {
         {0, 0, 0, 0},
-        {0, 1, 1, 0},
-        {0, 1, 1, 0},
+        {1, 1, 1, 1},
+        {0, 0, 0, 0},
         {0, 0, 0, 0}
     },
-    // 2: L -> tam = 3 (Apretado arriba a la izquierda en el bloque 3x3)
+    // 1: Cuadrado (O) -> Entra perfecto en 2x2 (filas 0 y 1, col 0 y 1)
+    {
+        {1, 1, 0, 0},
+        {1, 1, 0, 0},
+        {0, 0, 0, 0},
+        {0, 0, 0, 0}
+    },
+    // 2: Te (T) -> Entra en 3x3 (filas 0 y 1, col 0, 1 y 2)
     {
         {0, 1, 0, 0},
-        {0, 1, 0, 0},
-        {0, 1, 1, 0},
+        {1, 1, 1, 0},
+        {0, 0, 0, 0},
         {0, 0, 0, 0}
     },
-    // 3: J -> tam = 3 (Apretado arriba a la izquierda en el bloque 3x3)
+    // 3: L -> Entra en 3x3
     {
         {0, 0, 1, 0},
-        {0, 0, 1, 0},
-        {0, 1, 1, 0}, // El bloque sobresale hacia la izquierda ocupando el 3x3
+        {1, 1, 1, 0},
+        {0, 0, 0, 0},
         {0, 0, 0, 0}
     },
-    // 4: Z -> tam = 3 (Subido a la fila 0 y corrido a la columna 0)
+    // 4: J -> Entra en 3x3
     {
+        {1, 0, 0, 0},
+        {1, 1, 1, 0},
         {0, 0, 0, 0},
-        {0, 1, 1, 0},
-        {0, 0, 1, 1},
         {0, 0, 0, 0}
     },
-    // 5: S -> tam = 3 (Subido a la fila 0 y corrido a la columna 0)
+    // 5: S -> Entra en 3x3
     {
-        {0, 0, 0, 0},
         {0, 1, 1, 0},
         {1, 1, 0, 0},
+        {0, 0, 0, 0},
         {0, 0, 0, 0}
     },
-    // 6: T -> tam = 3 (Este ya lo tenías perfecto)
+    // 6: Z -> Entra en 3x3
     {
+        {1, 1, 0, 0},
+        {0, 1, 1, 0},
         {0, 0, 0, 0},
-        {1, 1, 1, 0},
-        {0, 1, 0, 0},
         {0, 0, 0, 0}
     }
-
-    // T, L, J, S, Z...
 };
 
 void iniciarJuego(tJuego *juego, int** tablero)
@@ -138,111 +135,63 @@ int verificar_y_limpiar_lineas(int **tablero) {
     return lineas_borradas;
 }
 
-
+/*
+void fijar_pieza(tPieza *p, int **tablero) {
+    for (int i = 0; i < p->tam; i++) {
+        for (int j = 0; j < p->tam; j++) {
+            if (p->matriz[i][j] != 0)
+                {
+                // Pasamos el color al casillero correspondiente del tablero
+                tablero[p->py + i][p->px + j] = p->matriz[i][j];
+                }
+        }
+    }
+}
+*/
 void fijar_pieza(tPieza *p, int **tablero) {
     for (int i = 0; i < p->tam; i++) {
         for (int j = 0; j < p->tam; j++) {
             if (p->matriz[i][j] != 0) {
-                // Pasamos el color al casillero correspondiente del tablero
-                tablero[p->py + i][p->px + j] = p->matriz[i][j];
-            }
-        }
-    }
-}
+                int tableroX = p->px + j;
+                int tableroY = p->py + i;
 
-
-int comprobar_colision(int x, int y, int **matriz, int tam, int **tablero)
-{
-    for(int f = 0; f < tam; f++)
-    {
-        for(int c = 0; c < tam; c++)
-        {
-            // Solo analizamos bloques ocupados de la pieza
-            if(matriz[f][c] != 0)
-            {
-                int tableroX = x + c;
-                int tableroY = y + f;
-
-                // -----------------------------
-                // COLISIÓN CON BORDES
-                // -----------------------------
-
-                // izquierda
-                if(tableroX < 0)
-                    return 1;
-
-                // derecha
-                if(tableroX >= COL)
-                    return 1;
-
-                // abajo
-                if(tableroY >= FILAS)
-                    return 1;
-
-                // -----------------------------
-                // COLISIÓN CON OTRA PIEZA
-                // -----------------------------
-
-                if(tableroY >= 0 &&
-                        tablero[tableroY][tableroX] != 0)
-                {
-                    return 1;
+                // Guardamos en el tablero solo si está dentro de los márgenes reales
+                if (tableroX >= 0 && tableroX < 10 && tableroY >= 0 && tableroY < 20) {
+                    tablero[tableroY][tableroX] = p->color; // Guardamos su color real
                 }
             }
         }
     }
+}
 
+int comprobar_colision(int px, int py, int **matriz, int tam, int **tablero) {
+    for (int i = 0; i < tam; i++) {
+        for (int j = 0; j < tam; j++) {
+            // Verificamos si la celda del molde del tetramino tiene un bloque (distinto de 0)
+            if (matriz[i][j] != 0) {
+                int tableroX = px + j;
+                int tableroY = py + i;
+
+                // 1. Validamos límites laterales e inferiores absolutos de la grilla (10x20)
+                if (tableroX < 0 || tableroX >= 10 || tableroY >= 20) {
+                    return 1; // Colisión con bordes o con el fondo del pozo
+                }
+
+                // 2. Si la pieza está naciendo arriba de todo (Y negativo), no testea bloques fijos
+                if (tableroY < 0) {
+                    continue;
+                }
+
+                // 3. Validamos si esa posición ya está ocupada por otra pieza fija
+                if (tablero[tableroY][tableroX] != 0) {
+                    return 1; // Colisión contra bloque estático
+                }
+            }
+        }
+    }
     return 0;
 }
 
-/*
-void rotar_pieza(tPieza *p,int** tablero)
-{
-
-    int tam = p->tam;
-
-    // 1. Creamos un NUEVO array de punteros (las nuevas filas)
-    // Pero OJO: no reservamos memoria para los enteros individuales (las columnas),
-    // vamos a reutilizar los vectores que ya existen.
-    int **nuevas_filas = (int **)malloc(tam * sizeof(int *));
-
-    // 2. Aplicamos la lógica de rotación REORDENANDO los punteros de las filas
-    // En lugar de mover elemento por elemento, reasignamos a dónde apunta cada fila.
-    for (int f = 0; f < tam; f++)
-    {
-        // Buscamos cuál de las filas originales se convertirá en la nueva fila 'f'
-        // después de girar 90 grados.
-        nuevas_filas[f] = p->matriz[(tam - 1) - f];
-    }
-
-
-
-    if (!comprobar_colision(p->px, p->py, nuevas_filas, tam, tablero))
-    {
-
-        // ¡La rotación es válida!
-        // Liberamos el viejo "index" de punteros de la pieza (solo el array de arriba)
-        free(p->matriz);
-
-        // Hacemos que la pieza adopte el nuevo orden de punteros
-        p->matriz = nuevas_filas;
-
-        // NOTA MATEMÁTICA: La rotación pura de punteros de filas nos deja una matriz transpuesta.
-        // Para completar el giro horizontal de los elementos internos sin reescribir todo,
-        // simplemente invertimos el orden de las columnas en el dibujado o mediante un swap rápido de punteros.
-
-    }
-    else
-    {
-        // Si colisiona, abortamos. Liberamos el array temporal de punteros.
-        // Los datos reales de la pieza quedan intactos porque nunca los tocamos.
-        free(nuevas_filas);
-    }
-
-
-
-}
-*/
 void rotar_pieza(tPieza *p, int **tablero)
 {
     int tam = p->tam;
@@ -297,35 +246,35 @@ void crearPieza(tPieza *p)
     //int num=0;
     p->num = tipo;
 
-    switch(p->num)
+   switch(p->num)
     {
-    case 0:
+    case 0: // Barra (I)
         p->color = 11;
-        p->tam=4;
+        p->tam = 4; //
         break;
-    case 1:
+    case 1: // Cuadrado (O)
         p->color = 14;
-        p->tam=4;
+        p->tam = 2; //
         break;
-    case 2:
-        p->color =15;
-        p->tam=3;
+    case 2: // Te (T)
+        p->color = 15;
+        p->tam = 3;
         break;
-    case 3:
+    case 3: // L
         p->color = 1;
-        p->tam=3;
+        p->tam = 3;
         break;
-    case 4:
+    case 4: // J
         p->color = 4;
-        p->tam=4;
+        p->tam = 3;
         break;
-    case 5:
+    case 5: // S
         p->color = 2;
-        p->tam=3;
+        p->tam = 3;
         break;
-    case 6:
+    case 6: // Z
         p->color = 13;
-        p->tam=3;
+        p->tam = 3;
         break;
     }
 
@@ -336,14 +285,13 @@ void crearPieza(tPieza *p)
         p->matriz[i] = (int *)malloc(p->tam * sizeof(int));
     }
 
-    // 3. Copiamos los datos desde tu array original 'tetrominos'
-    // Pero solo copiamos hasta 'p->tam', evitando tocar memoria de más
+
     for (int i = 0; i < p->tam; i++)
     {
         for (int j = 0; j < p->tam; j++)
         {
 
-            // Si en tu matriz 'tetrominos' hay un 1 (bloque ocupado),
+            // Si en la matriz hay un 1 (bloque ocupado),
             // le guardamos su color. Si hay un 0, guardamos 0.
             if (tetrominos[p->num][i][j] != 0)
             {
@@ -372,4 +320,115 @@ void crearPieza(tPieza *p)
 
     p->px = 3;
     p->py = 0;
+}
+
+
+int verificar_y_limpiar_lineas_punteros(int **tablero, int ancho, int alto, tJuego *juego)
+{
+    int lineas_eliminadas = 0;
+    int filas_a_animar[20] = {0}; // Array para marcar cuáles filas se completaron
+    int hay_lineas = 0;
+
+    // 1. PRIMER PASO: Detectar y marcar qué filas están llenas
+    for (int f = 19; f >= 0; f--) {
+        int fila_completa = 1;
+        for (int c = 0; c < 10; c++) {
+            if (tablero[f][c] == 0) {
+                fila_completa = 0;
+                break;
+            }
+        }
+        if (fila_completa) {
+            filas_a_animar[f] = 1; // Marcamos que la fila 'f' debe parpadear
+            hay_lineas = 1;
+        }
+    }
+
+    // Si no hay ninguna línea completa, salimos rápido sin perder tiempo
+    if (!hay_lineas) {
+        return 0;
+    }
+
+    // 2. SEGUNDO PASO: Efecto visual de parpadeo
+    // Guardamos una copia temporal de los colores originales de esas filas para el parpadeo
+    int copia_colores[20][10];
+    for (int f = 0; f < 20; f++) {
+        if (filas_a_animar[f]) {
+            for (int c = 0; c < 10; c++) {
+                copia_colores[f][c] = tablero[f][c];
+            }
+        }
+    }
+
+    for (int parpadeo = 0; parpadeo < 3; parpadeo++) {
+        // FASE A: Pintar de BLANCO
+        for (int f = 0; f < 20; f++) {
+            if (filas_a_animar[f]) {
+                for (int c = 0; c < 10; c++) {
+                    tablero[f][c] = 7;
+                }
+            }
+        }
+
+        gbt_borrar_backbuffer(0);
+        dibujarmapa(juego, tablero, ancho, alto);
+        gbt_volcar_backbuffer();
+        gbt_esperar(80);
+
+        // FASE B: Pintar de NEGRO (Color 0) para simular el apagado
+        for (int f = 0; f < 20; f++) {
+            if (filas_a_animar[f]) {
+                for (int c = 0; c < 10; c++) {
+                    tablero[f][c] = 0;
+                }
+            }
+        }
+        gbt_borrar_backbuffer(0);
+        dibujarmapa(juego, tablero, ancho, alto);
+        gbt_volcar_backbuffer();
+        gbt_esperar(80);
+    }
+
+    // Restauramos los colores originales antes del procesamiento lógico por punteros
+    for (int f = 0; f < 20; f++) {
+        if (filas_a_animar[f]) {
+            for (int c = 0; c < 10; c++) {
+                tablero[f][c] = copia_colores[f][c];
+            }
+        }
+    }
+
+    // 3. TERCER PASO: El borrado físico real intercambiando los punteros
+    for (int f = 19; f >= 0; f--) {
+        if (filas_a_animar[f]) {
+            lineas_eliminadas++;
+
+            int *fila_a_vaciar = tablero[f];
+
+            // Vaciamos los datos de esa fila
+            for (int c = 0; c < 10; c++) {
+                fila_a_vaciar[c] = 0;
+            }
+
+            // Desplazamos los punteros de las filas superiores hacia abajo
+            for (int k = f; k > 0; k--) {
+                tablero[k] = tablero[k - 1];
+            }
+
+            // La fila vieja y limpia pasa a ser el nuevo techo (fila 0)
+            tablero[0] = fila_a_vaciar;
+
+            // Como los punteros se movieron, también tenemos que desplazar el
+            // array de marcas "filas_a_animar" para que sigan coincidiendo los índices
+            for (int k = f; k > 0; k--) {
+                filas_a_animar[k] = filas_a_animar[k - 1];
+            }
+            filas_a_animar[0] = 0;
+
+
+            f++;
+        }
+    }
+
+    return lineas_eliminadas;
 }

@@ -72,8 +72,8 @@ int main(int argc, char *argv[])
     tJuego juego;
     tPieza pieza;
     //tPartida partida;
-    uint16_t offsetX =  0;
-    uint16_t offsetY = 0;
+    //uint16_t offsetX =  0;
+    //uint16_t offsetY = 0;
 
     //int *tablero[FILAS];
 
@@ -114,6 +114,7 @@ int main(int argc, char *argv[])
     sprintf(nombreVentana, "Tetris - %s (%dx%d)", (ancho == 320 ? "CGA" : "VGA"), ancho, alto);
     if (gbt_crear_ventana(nombreVentana, ancho, alto, escala) != 0)
     {
+        fprintf(stderr, "Error al iniciar el modulo de graficos de GBT: %s\n", gbt_obtener_log());
         return -1;
     }
 
@@ -122,12 +123,6 @@ int main(int argc, char *argv[])
     juego.alto_v = alto;
     juego.opcionMenu = 0;
     juego.instancia = MENU;
-
-    if (gbt_crear_ventana(nombreVentana, ANCHO_VENTANA, ALTO_VENTANA, ESCALA_VENTANA) != 0)
-    {
-        fprintf(stderr, "Error al iniciar el modulo de graficos de GBT: %s\n", gbt_obtener_log());
-        return -1;
-    }
 
     if (gbt_aplicar_paleta(paletaCGA, CANT_COLORES, GBT_FORMATO_888) != 0)
     {
@@ -144,132 +139,285 @@ int main(int argc, char *argv[])
 
     srand(time(0));
     uint8_t corriendo= 1;
-    int opcionSeleccionada=0;
     juego.instancia=MENU;
-    uint8_t color = rand() % CANT_COLORES;
+    //uint8_t color = rand() % CANT_COLORES;
 
     while(corriendo)
     {
-        //if(juego.instancia == MENU)
-        //menuInicial(&juego, &partida);
-
         gbt_procesar_entrada();
 
-
+        // ==========================================
+        // ESTADO: MENÚ INICIAL
+        // ==========================================
         if(juego.instancia == MENU)
         {
             renderMenu(&juego);
+
             if(gbt_tecla_presionada(GBTK_w))
             {
                 juego.opcionMenu--;
-                if(juego.opcionMenu < 0)
-                {
-                    juego.opcionMenu = 3;
-                }
+                if(juego.opcionMenu < 0) juego.opcionMenu = 3;
             }
 
             if(gbt_tecla_presionada(GBTK_s))
             {
                 juego.opcionMenu++;
-                // Si se pasa del máximo (3), vuelve al inicio (0)
-                if(juego.opcionMenu > 3)
+                if(juego.opcionMenu > 3) juego.opcionMenu = 0;
+            }
+
+            if(gbt_tecla_presionada(GBTK_ENTER))
+            {
+                printf("ENTER detectado! Opcion actual: %d\n", juego.opcionMenu);
+                switch(juego.opcionMenu)
                 {
-                    juego.opcionMenu = 0;
+                case 0: // JUGAR
+                    // Reiniciamos el tablero a 0 por seguridad
+                    for(int i = 0; i < FILAS; i++)
+                    {
+                        for(int j = 0; j < COL; j++) tablero[i][j] = 0;
+                    }
+                    juego.puntaje = 0;
+                    juego.piezas_caidas = 0;
+                    juego.velocidad_actual = 1.0; // Velocidad inicial del temporizador
+
+                    iniciarJuego(&juego, tablero);
+                    crearPieza(&pieza);
+                    juego.instancia = JUGANDO;
+                    break;
+                case 1: // CONFIG
+                    juego.instancia = CONFIG;
+                    break;
+                case 3: // SALIR
+                    corriendo = 0;
+                    break;
                 }
             }
         }
-
-
-        int estadoTecla = gbt_tecla_presionada(GBTK_ENTER);
-
-        // Suponiendo que tu menú tiene este orden visual:
-        // 0: JUGAR, 1: CONFIG, 2: RANK, 3: SALIR
-        if(gbt_tecla_presionada(GBTK_ENTER))
-        {
-            printf("ENTER detectado! Opcion actual: %d\n", juego.opcionMenu);
-            switch(juego.opcionMenu)
-            {
-            case 0: // JUGAR
-                juego.instancia = JUGANDO;
-                iniciarJuego(&juego,tablero);
-                crearPieza(&pieza);
-                // Aquí podrías resetear el juego o cambiar de pantalla
-                break;
-            case 1: // CONFIG
-                juego.instancia = CONFIG;
-                break;
-            case 3: // SALIR
-                corriendo = 0;
-                break;
-            }
-        }
+        // ==========================================
+        // ESTADO: EN PARTIDA (JUGANDO)
+        // ==========================================
         else if (juego.instancia == JUGANDO)
         {
-            // 3. Si el estado cambió, el menú ya no se dibuja más
-            // Y ahora solo se dibuja el mapa de forma constante
-            dibujarmapa(&juego,tablero,ancho,alto);
-            dibujarPieza(&pieza);
-            /*
-            if(comprobar_colision(50,10,pieza.matriz,pieza.tam,tablero))
-            {
-                fijar_pieza(&pieza,tablero);
+            int quiere_bajar = 0;
+            int quiere_mover_izq = 0;
+            int quiere_mover_der = 0;
 
-            }
-            */
+            // 1. Gravedad automática normal
             if (gbt_temporizador_consumir(temporizador))
             {
-                pieza.py++;
-
-            }
-            if(gbt_tecla_sostenida(GBTK_ABAJO))
-            {
-                pieza.py++;
+                quiere_bajar = 1;
             }
 
-            if(gbt_tecla_presionada(GBTK_ARRIBA))
+            // ================================================================
+            // 2. SISTEMA DE TECLADO MEJORADO CON RÁFAGA (DAS) Y ANTIFANTASMAS
+            // ================================================================
+
+            // Contadores estáticos para el movimiento lateral continuo
+            static int framesIzquierda = 0;
+            static int cooldownIzquierda = 0;
+            static int framesDerecha = 0;
+            static int cooldownDerecha = 0;
+
+            // Este flag estático evita que la ráfaga de la pieza anterior afecte a la nueva
+            static int bloquearAbajoHastaSoltar = 0;
+            static int delayAbajo = 0;
+
+            // --- MOVIMIENTO IZQUIERDA (Poco a poco) ---
+            if (gbt_tecla_sostenida(GBTK_IZQUIERDA) || gbt_tecla_presionada(GBTK_IZQUIERDA))
             {
-                rotar_pieza(&pieza,tablero);
-                dibujarPieza(&pieza);
+                framesIzquierda++;
+                if (gbt_tecla_presionada(GBTK_IZQUIERDA))
+                {
+                    quiere_mover_izq = 1; // Un toque corto = un casillero
+                }
+                else
+                {
+                    cooldownIzquierda++;
+                    // Espera 18 frames para arrancar la ráfaga, y luego mueve cada 5 frames (freno real)
+                    if (framesIzquierda > 700 && cooldownIzquierda >= 100)
+                    {
+                        quiere_mover_izq = 1;
+                        cooldownIzquierda = 0;
+                    }
+                }
+            }
+            else
+            {
+                framesIzquierda = 0;
+                cooldownIzquierda = 0;
             }
 
-            if(gbt_tecla_presionada(GBTK_DERECHA))
+            if (gbt_tecla_sostenida(GBTK_DERECHA) || gbt_tecla_presionada(GBTK_DERECHA))
             {
-                // Solo sumamos si no hemos llegado al borde derecho
-                if (pieza.px < LIMITE_DERECHO)
+                framesDerecha++;
+                if (gbt_tecla_presionada(GBTK_DERECHA))
+                {
+                    quiere_mover_der = 1; // Un toque corto = un casillero
+                }
+                else
+                {
+                    cooldownDerecha++;
+                    // Espera 18 frames para arrancar la ráfaga, y luego mueve cada 5 frames
+                    if (framesDerecha > 700 && cooldownDerecha >= 100)
+                    {
+                        quiere_mover_der = 1;
+                        cooldownDerecha = 0;
+                    }
+                }
+            }
+            else
+            {
+                framesDerecha = 0;
+                cooldownDerecha = 0;
+            }
+
+            // --- CONTROL ABAJO ---
+            if (gbt_tecla_sostenida(GBTK_ABAJO) || gbt_tecla_presionada(GBTK_ABAJO))
+            {
+                // Si el escudo está activo, ignoramos la pulsación hasta que levante el dedo
+                if (!bloquearAbajoHastaSoltar)
+                {
+                    delayAbajo++;
+                    if (gbt_tecla_presionada(GBTK_ABAJO))
+                    {
+                        quiere_bajar = 1;
+                    }
+                    else if (delayAbajo >= 150) // Ráfaga de caída rápida
+                    {
+                        quiere_bajar = 1;
+                        delayAbajo = 0;
+                        juego.puntaje += 1;
+                    }
+                }
+            }
+            else
+            {
+                // Cuando el jugador suelta la flecha abajo, desactivamos el escudo protector
+                bloquearAbajoHastaSoltar = 0;
+                delayAbajo = 0;
+            }
+
+
+            // ================================================================
+            // 3. PROCESAMIENTO EFECTIVO DE MOVIMIENTOS Y FÍSICA
+            // ================================================================
+
+            // Aplicar movimientos laterales primero
+            if (quiere_mover_izq)
+            {
+                pieza.px--;
+                if (comprobar_colision(pieza.px, pieza.py, pieza.matriz, pieza.tam, tablero))
                 {
                     pieza.px++;
                 }
             }
-
-            if(gbt_tecla_presionada(GBTK_IZQUIERDA))
+            if (quiere_mover_der)
             {
-                // Solo restamos si no hemos llegado al borde izquierdo
-                if (pieza.px > LIMITE_IZQUIERDO)
+                pieza.px++;
+                if (comprobar_colision(pieza.px, pieza.py, pieza.matriz, pieza.tam, tablero))
                 {
                     pieza.px--;
                 }
             }
 
+            // Control de rotación estándar
+            if (gbt_tecla_presionada(GBTK_ARRIBA))
+            {
+                rotar_pieza(&pieza, tablero);
+            }
+
+            static int framesDeLay = 0;
+
+            if (quiere_bajar)
+            {
+                quiere_bajar = 0;
+                pieza.py++;
+
+
+                if (comprobar_colision(pieza.px, pieza.py, pieza.matriz, pieza.tam, tablero))
+                {
+                    pieza.py--; // Deshacemos el movimiento para dejarla en posición válida
+
+                    framesDeLay++;
+
+                    if (framesDeLay >= 2) // Fui calibrando este numero para ver cuanto tenia para que el usuario mueva
+                    {
+                        framesDeLay = 0;
+
+
+                        fijar_pieza(&pieza, tablero);
+
+                        // Liberación de memoria
+                        for (int i = 0; i < pieza.tam; i++) {
+                            free(pieza.matriz[i]);
+                        }
+                        free(pieza.matriz);
+
+
+                        int lineas = verificar_y_limpiar_lineas_punteros(tablero, ancho, alto, &juego);
+                        if (lineas > 0)
+                        {
+                            if (lineas == 1) juego.puntaje += 100;
+                            else if (lineas == 2) juego.puntaje += 300;
+                            else if (lineas == 3) juego.puntaje += 500;
+                            else if (lineas == 4) juego.puntaje += 800;
+                        }
+
+
+                        juego.piezas_caidas++;
+                        if (juego.piezas_caidas > 0 && juego.piezas_caidas % 10 == 0)
+                        {
+                            juego.velocidad_actual *= 0.95f;
+                            gbt_temporizador_destruir(temporizador);
+                            temporizador = gbt_temporizador_crear(juego.velocidad_actual);
+                        }
+
+
+                        bloquearAbajoHastaSoltar = 1;
+                        delayAbajo = 0;
+
+
+                        crearPieza(&pieza);
+
+                        if (comprobar_colision(pieza.px, pieza.py, pieza.matriz, pieza.tam, tablero))
+                        {
+                            printf("GAME OVER - Tablero lleno.\n");
+                            juego.instancia = MENU;
+                        }
+                    }
+                }
+                else
+                {
+                    framesDeLay = 0;
+                }
+            }
+
+
+            gbt_borrar_backbuffer(0);
+            dibujarmapa(&juego, tablero, ancho, alto);
+            dibujarPieza(&pieza, ancho, alto);
+            gbt_volcar_backbuffer();
+
         }
 
         if(gbt_tecla_presionada(GBTK_ESCAPE))
         {
-            corriendo=0;
+            corriendo = 0;
         }
+
     }
+
 
     for(int i = 0; i < FILAS; i++)
     {
         free(tablero[i]);
     }
-
     free(tablero);
 
     gbt_temporizador_destruir(temporizador);
     gbt_destruir_ventana();
     gbt_cerrar();
     return 0;
-
 
 }
 

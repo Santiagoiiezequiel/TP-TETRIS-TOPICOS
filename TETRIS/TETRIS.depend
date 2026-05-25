@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1779337610 source:d:\escritorio\tp-topicos\tp-tetris-topicos\tetris\dibujo.c
+1779669792 source:d:\escritorio\tp-topicos\tp-tetris-topicos\tetris\dibujo.c
 	"GBT/gbt.h"
 	"dibujo.h"
 	"juego.h"
@@ -27,7 +27,7 @@
 	<stdlib.h>
 	<stdint.h>
 
-1779344790 source:d:\escritorio\tp-topicos\tp-tetris-topicos\tetris\main.c
+1779735147 source:d:\escritorio\tp-topicos\tp-tetris-topicos\tetris\main.c
 	<stdio.h>
 	<stdlib.h>
 	<stdint.h>
@@ -37,19 +37,19 @@
 	"juego.h"
 	<string.h>
 
-1778549087 d:\escritorio\tp-topicos\tp-tetris-topicos\tetris\dibujo.h
+1779669792 d:\escritorio\tp-topicos\tp-tetris-topicos\tetris\dibujo.h
 	"GBT/gbt.h"
 	<stdio.h>
 	<stdlib.h>
 	"juego.h"
 
-1779344847 source:d:\escritorio\tp-topicos\tp-tetris-topicos\tetris\juego.c
+1779736259 source:d:\escritorio\tp-topicos\tp-tetris-topicos\tetris\juego.c
 	"juego.h"
 	<stdio.h>
 	<stdlib.h>
 	"dibujo.h"
 	"GBT/gbt.h"
 
-1779344704 d:\escritorio\tp-topicos\tp-tetris-topicos\tetris\juego.h
+1779672629 d:\escritorio\tp-topicos\tp-tetris-topicos\tetris\juego.h
 	"GBT/gbt.h"
 
