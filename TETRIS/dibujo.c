@@ -10,116 +10,48 @@
 
 unsigned char fuente[256][5][5] =
 {
-    ['T'] = {{1,1,1,1,1}, {0,0,1,0,0}, {0,0,1,0,0}, {0,0,1,0,0}, {0,0,1,0,0}},
-    ['E'] = {{1,1,1,1,1}, {1,0,0,0,0}, {1,1,1,1,0}, {1,0,0,0,0}, {1,1,1,1,1}},
-    ['R'] = {{1,1,1,1,0}, {1,0,0,0,1}, {1,1,1,1,0}, {1,0,1,0,0}, {1,0,0,1,1}},
-    ['I'] = {{0,1,1,1,0}, {0,0,1,0,0}, {0,0,1,0,0}, {0,0,1,0,0}, {0,1,1,1,0}},
-    ['S'] = {{0,1,1,1,1}, {1,0,0,0,0}, {0,1,1,1,0}, {0,0,0,0,1}, {1,1,1,1,0}},
-    ['J'] = {{0,0,1,1,1}, {0,0,0,1,0}, {0,0,0,1,0}, {1,0,0,1,0}, {0,1,1,0,0}},
-    ['U'] = {{1,0,0,0,1}, {1,0,0,0,1}, {1,0,0,0,1}, {1,0,0,0,1}, {0,1,1,1,0}},
-    ['G'] = {{0,1,1,1,0}, {1,0,0,0,0}, {1,0,1,1,1}, {1,0,0,0,1}, {0,1,1,1,0}},
     ['A'] = {{0,1,1,1,0}, {1,0,0,0,1}, {1,1,1,1,1}, {1,0,0,0,1}, {1,0,0,0,1}},
-    ['L'] = {{1,0,0,0,0}, {1,0,0,0,0}, {1,0,0,0,0}, {1,0,0,0,0}, {1,1,1,1,1}},
+    ['B'] = {{1,1,1,1,0}, {1,0,0,0,1}, {1,1,1,1,0}, {1,0,0,0,1}, {1,1,1,1,0}},
     ['C'] = {{1,1,1,1,1}, {1,0,0,0,0}, {1,0,0,0,0}, {1,0,0,0,0}, {1,1,1,1,1}},
-    ['O'] = {{1,1,1,1,1}, {1,0,0,0,1}, {1,0,0,0,1}, {1,0,0,0,1}, {1,1,1,1,1}},
-    ['N'] = {{1,0,0,0,1}, {1,1,0,0,1}, {1,0,1,0,1}, {1,0,0,1,1}, {1,0,0,0,1}},
+    ['D'] = {{1,1,1,1,0}, {1,0,0,0,1}, {1,0,0,0,1}, {1,0,0,0,1}, {1,1,1,1,0}},
+    ['E'] = {{1,1,1,1,1}, {1,0,0,0,0}, {1,1,1,1,0}, {1,0,0,0,0}, {1,1,1,1,1}},
     ['F'] = {{1,1,1,1,1}, {1,0,0,0,0}, {1,1,1,1,0}, {1,0,0,0,0}, {1,0,0,0,0}},
-    ['K'] = {{1,0,0,0,1}, {1,0,0,1,0}, {1,1,1,0,0}, {1,0,0,1,0}, {1,0,0,0,1}}
+    ['G'] = {{0,1,1,1,0}, {1,0,0,0,0}, {1,0,1,1,1}, {1,0,0,0,1}, {0,1,1,1,0}},
+    ['H'] = {{1,0,0,0,1}, {1,0,0,0,1}, {1,1,1,1,1}, {1,0,0,0,1}, {1,0,0,0,1}},
+    ['I'] = {{0,1,1,1,0}, {0,0,1,0,0}, {0,0,1,0,0}, {0,0,1,0,0}, {0,1,1,1,0}},
+    ['J'] = {{0,0,1,1,1}, {0,0,0,1,0}, {0,0,0,1,0}, {1,0,0,1,0}, {0,1,1,0,0}},
+    ['K'] = {{1,0,0,0,1}, {1,0,0,1,0}, {1,1,1,0,0}, {1,0,0,1,0}, {1,0,0,0,1}},
+    ['L'] = {{1,0,0,0,0}, {1,0,0,0,0}, {1,0,0,0,0}, {1,0,0,0,0}, {1,1,1,1,1}},
+    ['M'] = {{1,0,0,0,1}, {1,1,0,1,1}, {1,0,1,0,1}, {1,0,0,0,1}, {1,0,0,0,1}},
+    ['N'] = {{1,0,0,0,1}, {1,1,0,0,1}, {1,0,1,0,1}, {1,0,0,1,1}, {1,0,0,0,1}},
+    ['O'] = {{1,1,1,1,1}, {1,0,0,0,1}, {1,0,0,0,1}, {1,0,0,0,1}, {1,1,1,1,1}},
+    ['P'] = {{1,1,1,1,0}, {1,0,0,0,1}, {1,1,1,1,0}, {1,0,0,0,0}, {1,0,0,0,0}},
+    ['Q'] = {{0,1,1,1,0}, {1,0,0,0,1}, {1,0,1,0,1}, {1,0,0,1,0}, {0,1,1,0,1}},
+    ['R'] = {{1,1,1,1,0}, {1,0,0,0,1}, {1,1,1,1,0}, {1,0,1,0,0}, {1,0,0,1,1}},
+    ['S'] = {{0,1,1,1,1}, {1,0,0,0,0}, {0,1,1,1,0}, {0,0,0,0,1}, {1,1,1,1,0}},
+    ['T'] = {{1,1,1,1,1}, {0,0,1,0,0}, {0,0,1,0,0}, {0,0,1,0,0}, {0,0,1,0,0}},
+    ['U'] = {{1,0,0,0,1}, {1,0,0,0,1}, {1,0,0,0,1}, {1,0,0,0,1}, {0,1,1,1,0}},
+    ['V'] = {{1,0,0,0,1}, {1,0,0,0,1}, {1,0,0,0,1}, {0,1,0,1,0}, {0,0,1,0,0}},
+    ['W'] = {{1,0,0,0,1}, {1,0,0,0,1}, {1,0,1,0,1}, {1,1,0,1,1}, {1,0,0,0,1}},
+    ['X'] = {{1,0,0,0,1}, {0,1,0,1,0}, {0,0,1,0,0}, {0,1,0,1,0}, {1,0,0,0,1}},
+    ['Y'] = {{1,0,0,0,1}, {0,1,0,1,0}, {0,0,1,0,0}, {0,0,1,0,0}, {0,0,1,0,0}},
+    ['Z'] = {{1,1,1,1,1}, {0,0,0,1,0}, {0,0,1,0,0}, {0,1,0,0,0}, {1,1,1,1,1}},
+
+    // Espacio en blanco (Opcional, pero clave para que no printee basura)
+    [' '] = {{0,0,0,0,0}, {0,0,0,0,0}, {0,0,0,0,0}, {0,0,0,0,0}, {0,0,0,0,0}},
+    ['0'] = {{1,1,1,1,1}, {1,0,0,0,1}, {1,0,0,0,1}, {1,0,0,0,1}, {1,1,1,1,1}},
+    ['1'] = {{0,0,1,0,0}, {0,1,1,0,0}, {0,0,1,0,0}, {0,0,1,0,0}, {1,1,1,1,1}},
+    ['2'] = {{1,1,1,1,1}, {0,0,0,0,1}, {1,1,1,1,1}, {1,0,0,0,0}, {1,1,1,1,1}},
+    ['3'] = {{1,1,1,1,1}, {0,0,0,0,1}, {0,1,1,1,1}, {0,0,0,0,1}, {1,1,1,1,1}},
+    ['4'] = {{1,0,0,0,1}, {1,0,0,0,1}, {1,1,1,1,1}, {0,0,0,0,1}, {0,0,0,0,1}},
+    ['5'] = {{1,1,1,1,1}, {1,0,0,0,0}, {1,1,1,1,1}, {0,0,0,0,1}, {1,1,1,1,1}},
+    ['6'] = {{1,1,1,1,1}, {1,0,0,0,0}, {1,1,1,1,1}, {1,0,0,0,1}, {1,1,1,1,1}},
+    ['7'] = {{1,1,1,1,1}, {0,0,0,0,1}, {0,0,1,0,0}, {0,1,0,0,0}, {0,1,0,0,0}},
+    ['8'] = {{1,1,1,1,1}, {1,0,0,0,1}, {1,1,1,1,1}, {1,0,0,0,1}, {1,1,1,1,1}},
+    ['9'] = {{1,1,1,1,1}, {1,0,0,0,1}, {1,1,1,1,1}, {0,0,0,0,1}, {1,1,1,1,1}}
 };
 
-/*
-void dibujarMenu(tJuego* juego, tBotones* jugar, tBotones* config, tBotones* salir, tBotones* ranking, tBotones* ayuda)
-{
-    TTF_Font* titulo;
-    SDL_Texture* textTitulo;
-    SDL_Surface* surfTitulo;
-    SDL_Rect destTitulo;
-    SDL_Color colorTexto = {255, 255, 255, 240}; //blanco
-    int anchoTitulo, altoTitulo;
 
-    titulo = TTF_OpenFont("fnt/Aero.ttf", 24);
-    if (!titulo)
-        printf("OpenFont: %s\n", TTF_GetError());
-
-    TTF_SizeUTF8(titulo, "Simon Game", &anchoTitulo, &altoTitulo);
-
-    destTitulo.x = 25;
-    destTitulo.y = 50;
-    destTitulo.w = anchoTitulo;
-    destTitulo.h = altoTitulo;
-
-    surfTitulo = TTF_RenderUTF8_Blended(titulo, "Simon Game", colorTexto);
-    textTitulo = SDL_CreateTextureFromSurface(juego->render, surfTitulo);
-    SDL_FreeSurface(surfTitulo);
-
-    dibujarBotones(jugar, "Jugar", juego, 75, 90, "fnt/VCR_OSD_MONO_1.001.ttf", 16, colorTexto);
-    dibujarBotones(config, "Configuracion", juego, 40, 110, "fnt/VCR_OSD_MONO_1.001.ttf", 16, colorTexto);
-    dibujarBotones(ranking, "Ranking", juego, 65, 130, "fnt/VCR_OSD_MONO_1.001.ttf", 16, colorTexto);
-    dibujarBotones(ayuda, "Ayuda", juego, 140, 20, "fnt/VCR_OSD_MONO_1.001.ttf", 16, colorTexto);
-    dibujarBotones(salir, "Salir", juego, 75, 160, "fnt/VCR_OSD_MONO_1.001.ttf", 16, colorTexto);
-
-    SDL_RenderCopy(juego->render, textTitulo, NULL, &destTitulo);
-    SDL_RenderPresent(juego->render);
-
-    SDL_DestroyTexture(textTitulo);
-    SDL_DestroyTexture(jugar->textura);
-    SDL_DestroyTexture(salir->textura);
-    SDL_DestroyTexture(config->textura);
-    SDL_DestroyTexture(ranking->textura);
-    SDL_DestroyTexture(ayuda->textura);
-
-    TTF_CloseFont(titulo);
-    TTF_CloseFont(jugar->fuente);
-    TTF_CloseFont(config->fuente);
-    TTF_CloseFont(salir->fuente);
-    TTF_CloseFont(ranking->fuente);
-    TTF_CloseFont(ayuda->fuente);
-}
-
-
-void dibujarBotones(tBotones* boton, char* nombre, tJuego* juego, int x, int y, char* fuente, int tam, SDL_Color color)
-{
-    boton->fuente = TTF_OpenFont(fuente, tam);
-    if (!boton->fuente)
-        printf("OpenFont: %s\n", TTF_GetError());
-
-    TTF_SizeUTF8(boton->fuente, nombre, &(boton->destino.w), &(boton->destino.h));
-
-    boton->destino.x = x;
-    boton->destino.y = y;
-
-    boton->surface = TTF_RenderUTF8_Blended(boton->fuente, nombre, color);
-    boton->textura = SDL_CreateTextureFromSurface(juego->render, boton->surface);
-    SDL_FreeSurface(boton->surface);
-
-    SDL_RenderCopy(juego->render, boton->textura, NULL, &(boton->destino));
-}
-
-
-void dibujarTextos(char* nombre, tJuego* juego, int x, int y, char* fuente, int tam, SDL_Color color)
-{
-    SDL_Surface* surface;
-    SDL_Texture* textura;
-    SDL_Rect destino;
-    TTF_Font* font = TTF_OpenFont(fuente, tam);
-    if (!font)
-        printf("OpenFont: %s\n", TTF_GetError());
-
-    TTF_SizeUTF8(font, nombre, &(destino.w), &(destino.h));
-
-    destino.x = x;
-    destino.y = y;
-
-    surface = TTF_RenderUTF8_Blended(font, nombre, color);
-    textura = SDL_CreateTextureFromSurface(juego->render, surface);
-    SDL_FreeSurface(surface);
-
-    SDL_RenderCopy(juego->render, textura, NULL, &destino);
-
-    SDL_DestroyTexture(textura);
-    TTF_CloseFont(font);
-}
-*/
 
 void escribir_texto(int x, int y, const char* texto, int color)
 {
@@ -143,6 +75,74 @@ void escribir_texto(int x, int y, const char* texto, int color)
     }
 }
 
+
+void escribir_texto_escalado(int x, int y, const char *texto, int color, int escala)
+{
+    int i = 0;
+    // Recorremos cada letra de la palabra
+    while (texto[i] != '\0')
+    {
+        char c = texto[i];
+
+        // Recorremos la matriz de 5x5 de la fuente para esa letra
+        for (int fila = 0; fila < 5; fila++)
+        {
+            for (int col = 0; col < 5; col++)
+            {
+                // Si el bit está encendido, dibujamos un bloque de tamaño (escala x escala)
+                if (fuente[(unsigned char)c][fila][col] == 1)
+                {
+                    int px = x + (col * escala);
+                    int py = y + (fila * escala);
+                    dibujar_bloque(px, py, escala, escala, color);
+                }
+            }
+        }
+
+        // Avanzamos la X para la siguiente letra:
+        // (5 píxeles de la letra + 1 de espacio) multiplicado por la escala
+        x += (5 + 1) * escala;
+        i++;
+    }
+}
+
+void dibujar_bloque_tetris(int x, int y, int ancho,int alto, int color)
+{
+    // 1. Dibujamos el centro sólido con el color de la pieza
+    for (int i = 1; i < alto - 1; i++)
+    {
+        for (int j = 1; j < alto - 1; j++)
+        {
+            gbt_dibujar_pixel(x + i, y + j, color);
+        }
+    }
+
+    // 2. Brillo superior (Línea horizontal superior blanca o tono claro = 15 o 7)
+    // Usamos color 15 (Blanco brillante) para el reflejo de luz
+    for (int i = 0; i < alto - 1; i++)
+    {
+        gbt_dibujar_pixel(x + i, y, 7);
+    }
+
+    // 3. Brillo izquierdo (Línea vertical izquierda blanca)
+    for (int j = 0; j < alto - 1; j++)
+    {
+        gbt_dibujar_pixel(x, y + j, 8);
+    }
+
+    // 4. Sombra inferior (Línea horizontal inferior gris oscuro = 8)
+    for (int i = 0; i < alto; i++)
+    {
+        gbt_dibujar_pixel(x + i, y + (alto - 1), 8);
+    }
+
+    // 5. Sombra derecha (Línea vertical derecha gris oscuro)
+    for (int j = 0; j < alto; j++)
+    {
+        gbt_dibujar_pixel(x + (alto - 1), y + j, 8);
+    }
+}
+
 void dibujar_bloque(int x, int y, int ancho, int alto, int color)
 {
     for (int i = 0; i < ancho; i++)
@@ -152,56 +152,6 @@ void dibujar_bloque(int x, int y, int ancho, int alto, int color)
             gbt_dibujar_pixel(x + i, y + j, color);
         }
     }
-}
-/*
-void renderMenu(tJuego *juego) {
-    // Limpiamos el fondo primero (importante para no dejar rastro)
-    gbt_borrar_backbuffer(0);
-
-    for(int i = 0; i < 4; i++) { // Supongamos 4 opciones
-        int y_pos = 60 + (i * 25);
-        int color = (i == juego->opcionMenu) ? 7 : 3; // Color brillante si está seleccionado
-        escribir_texto(50, 20, "TETRIS", 7);
-        // Dibujamos un rectángulo de 60x15 píxeles
-        dibujar_bloque(40, y_pos, 60, 15, color);
-        escribir_texto(50, 70, "JUGAR", 7);
-    }
-    gbt_volcar_backbuffer();
-    // Si la librería requiere presentar el buffer, recordá llamarlo en el main
-}
-*/
-
-void renderMenu(tJuego *juego)
-{
-    gbt_borrar_backbuffer(0);
-
-    int anchoTexto = strlen("TETRIS") * 8;
-    int xTitulo = (juego->ancho_v - anchoTexto) / 2;
-    int yTitulo = 30;
-
-    int centroX = juego->ancho_v / 2;
-    int centroY = juego->alto_v / 2;
-
-    // 1. Dibujar el Título (UNA SOLA VEZ, fuera del for)
-    escribir_texto(xTitulo, yTitulo, "TETRIS", 2);
-
-    // 2. Dibujar las opciones
-    char *nombres[] = {"JUGAR", "CONFIG", "RANKING", "SALIR"};
-
-    for(int i = 0; i < 4; i++)
-    {
-        int y_pos = 100 + (i * 25); // Bajamos un poco el menú
-        int colorBloque = (i == juego->opcionMenu) ? 7 : 3; // Blanco si seleccionado, gris si no
-        int colorTexto = (i == juego->opcionMenu) ? 0 : 7;  // Texto negro sobre bloque blanco, o viceversa
-
-        // Dibujamos el bloque
-        dibujar_bloque(50, y_pos, 60, 15, colorBloque);
-
-        // Dibujamos el texto centrado en el bloque (usamos y_pos + un pequeño offset)
-        escribir_texto(55, y_pos + 5, nombres[i], colorTexto);
-    }
-
-    gbt_volcar_backbuffer();
 }
 
 
@@ -238,9 +188,13 @@ void dibujar_marco(int x, int y , int ancho,int alto , int color)
 
 
 void dibujarPieza(tPieza *p, int ancho, int alto) {
-    // Calculamos el mismo offset dinámico que el mapa
-    int pozo_ancho = 80;
-    int pozo_alto = 160;
+    // 1. Determinar el tamaño del bloque según la resolución
+    int tam_bloque = (ancho <= 320) ? 8 : 16;
+    int tam_interno = tam_bloque - 1; // 7 para CGA, 15 para VGA
+
+    // 2. Calcular las dimensiones del pozo dinámicamente
+    int pozo_ancho = COL * tam_bloque;   // 10 * tam_bloque
+    int pozo_alto = FILAS * tam_bloque;  // 20 * tam_bloque
 
     int offsetX = (ancho - pozo_ancho) / 2;
     int offsetY = (alto - pozo_alto) / 2;
@@ -248,30 +202,32 @@ void dibujarPieza(tPieza *p, int ancho, int alto) {
     for(int i = 0; i < p->tam; i++) {
         for(int j = 0; j < p->tam; j++) {
             if(p->matriz[i][j]) {
-                int x = offsetX + (p->px + j) * 8;
-                int y = offsetY + (p->py + i) * 8;
+                // Multiplicamos por el tamaño de bloque dinámico
+                int x = offsetX + (p->px + j) * tam_bloque;
+                int y = offsetY + (p->py + i) * tam_bloque;
 
-                // Mismo tamaño 7x7
-                dibujar_bloque(x, y, 7, 7, p->color);
+                // Dibujamos con el tamaño adaptado
+                dibujar_bloque_tetris(x, y, tam_interno, tam_interno, p->color);
             }
         }
     }
 }
 
 
-void dibujarmapa(tJuego *juego, int** tablero,int ancho,int alto)
+void dibujarmapa(tJuego *juego, int** tablero, int ancho, int alto)
 {
-    // 1. Limpiamos con el color de fondo (por ejemplo, 0 para negro o el que quieras)
-    //gbt_borrar_backbuffer(0);
+    // 1. Determinar el tamaño del bloque según la resolución
+    int tam_bloque = (ancho <= 320) ? 8 : 16;
+    int tam_interno = tam_bloque - 1;
 
-
-    // Calculamos el centro para el pozo
-    int pozo_ancho = 80;  // 10 columnas * 8 px
-    int pozo_alto = 160; // 20 filas * 8 px
+    // 2. Calcular dimensiones del pozo
+    int pozo_ancho = COL * tam_bloque;
+    int pozo_alto = FILAS * tam_bloque;
 
     int offsetX = (ancho - pozo_ancho) / 2;
     int offsetY = (alto - pozo_alto) / 2;
 
+    // El marco rosa también se adapta al tamaño del pozo escalado
     dibujar_marco(offsetX - 2, offsetY - 2, pozo_ancho + 4, pozo_alto + 4, 5);
 
     for(int f = 0; f < FILAS; f++)
@@ -280,14 +236,14 @@ void dibujarmapa(tJuego *juego, int** tablero,int ancho,int alto)
         {
             if(tablero[f][c] != 0)
             {
-                int x = offsetX + (c * 8);
-                int y = offsetY + (f * 8);
+                // Multiplicamos por el tamaño dinámico
+                int x = offsetX + (c * tam_bloque);
+                int y = offsetY + (f * tam_bloque);
 
-                dibujar_bloque(x,y,7,7,tablero[f][c]);
+                dibujar_bloque_tetris(x, y, tam_interno, tam_interno, tablero[f][c]);
             }
         }
     }
-
 }
 
 void dibujar(const uint8_t dibujo[][PIXELES_X_LADO], uint16_t oX, uint16_t oY)

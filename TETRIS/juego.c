@@ -7,8 +7,10 @@
 #define FILAS 20
 #define LIMITE_IZQUIERDO 0
 #define LIMITE_DERECHO 7
+#define CONFIG_FILE "config.txt"
 
-int tetrominos[7][4][4] = {
+int tetrominos[7][4][4] =
+{
     // 0: Barra (I) -> Requiere 4x4 de espacio real para girar bien
     {
         {0, 0, 0, 0},
@@ -62,7 +64,7 @@ int tetrominos[7][4][4] = {
 
 void iniciarJuego(tJuego *juego, int** tablero)
 {
-    // 1. Limpiar el tablero (suponiendo FILAS 20 y COLS 10)
+    //1. Limpiar el tablero (suponiendo FILAS 20 y COLS 10)
     for(int i = 0; i < 20; i++)
     {
         for(int j = 0; j < 10; j++)
@@ -72,50 +74,83 @@ void iniciarJuego(tJuego *juego, int** tablero)
     }
 
     // 2. Resetear estadísticas
+
+
     juego->puntaje = 0;
-    juego->lineas = 0;
+    juego->lineas_limpiadas = 0;
+    juego->piezas_caidas = 0;
     juego->nivel = 1;
+    juego->velocidad_actual = 1.0f;
 
-    // 3. Generar la primera pieza
-    //generarNuevoTetramino(&juego);
-
-    // 4. Cambiar la instancia
-    //juego->instancia = JUGANDO;
 }
-/*
-void generarNuevoTetramino(tPieza *p)
+
+void guardarConfiguracion(tJuego *juego)
 {
+    FILE *archivo = fopen(CONFIG_FILE, "w");
+    if (archivo == NULL) return;
 
-    crearPieza(p);
+    // Accedemos a través de juego->config.variable
+    fprintf(archivo, "%d\n", juego->config.paleta);
+    fprintf(archivo, "%d\n", juego->config.resolucion);
+    fprintf(archivo, "%f\n", juego->config.velocidad_caida); // Guardamos como float
 
-
+    fclose(archivo);
 }
-*/
 
-int verificar_y_limpiar_lineas(int **tablero) {
+void cargarConfiguracion(tJuego *juego)
+{
+    FILE *archivo = fopen(CONFIG_FILE, "r");
+
+    if (archivo == NULL)
+    {
+        // Valores por defecto usando tus floats
+        juego->config.paleta = 0;
+        juego->config.resolucion = 0;
+        juego->config.velocidad_caida = 1.0f; // 1000ms base
+        juego->opcionConfig = 0;
+        guardarConfiguracion(juego);
+        return;
+    }
+
+    fscanf(archivo, "%d", &juego->config.paleta);
+    fscanf(archivo, "%d", &juego->config.resolucion);
+    fscanf(archivo, "%f", &juego->config.velocidad_caida); // Leemos como float
+    juego->opcionConfig = 0;
+
+    fclose(archivo);
+}
+
+
+int verificar_y_limpiar_lineas(int **tablero)
+{
     int lineas_borradas = 0;
 
     // Recorremos el tablero de abajo hacia arriba (FILAS = 20, COL = 10)
-    for (int i = 19; i >= 0; i--) {
+    for (int i = 19; i >= 0; i--)
+    {
         int fila_completa = 1;
 
         // Comprobamos si toda la fila está llena (ningún casillero es 0)
-        for (int j = 0; j < 10; j++) {
-            if (tablero[i][j] == 0) {
+        for (int j = 0; j < 10; j++)
+        {
+            if (tablero[i][j] == 0)
+            {
                 fila_completa = 0;
                 break;
             }
         }
 
         // ¡Si encontramos una fila llena!
-        if (fila_completa) {
+        if (fila_completa)
+        {
             lineas_borradas++;
 
             // Guardamos el puntero de la fila que va a desaparecer para no perder la memoria
             int *fila_a_vaciar = tablero[i];
 
             // Desplazamos los punteros de todas las filas superiores una posición hacia abajo
-            for (int k = i; k > 0; k--) {
+            for (int k = i; k > 0; k--)
+            {
                 tablero[k] = tablero[k - 1];
             }
 
@@ -123,7 +158,8 @@ int verificar_y_limpiar_lineas(int **tablero) {
             tablero[0] = fila_a_vaciar;
 
             // Limpiamos sus datos poniéndole ceros
-            for (int j = 0; j < 10; j++) {
+            for (int j = 0; j < 10; j++)
+            {
                 tablero[0][j] = 0;
             }
 
@@ -135,28 +171,21 @@ int verificar_y_limpiar_lineas(int **tablero) {
     return lineas_borradas;
 }
 
-/*
-void fijar_pieza(tPieza *p, int **tablero) {
-    for (int i = 0; i < p->tam; i++) {
-        for (int j = 0; j < p->tam; j++) {
+
+void fijar_pieza(tPieza *p, int **tablero)
+{
+    for (int i = 0; i < p->tam; i++)
+    {
+        for (int j = 0; j < p->tam; j++)
+        {
             if (p->matriz[i][j] != 0)
-                {
-                // Pasamos el color al casillero correspondiente del tablero
-                tablero[p->py + i][p->px + j] = p->matriz[i][j];
-                }
-        }
-    }
-}
-*/
-void fijar_pieza(tPieza *p, int **tablero) {
-    for (int i = 0; i < p->tam; i++) {
-        for (int j = 0; j < p->tam; j++) {
-            if (p->matriz[i][j] != 0) {
+            {
                 int tableroX = p->px + j;
                 int tableroY = p->py + i;
 
                 // Guardamos en el tablero solo si está dentro de los márgenes reales
-                if (tableroX >= 0 && tableroX < 10 && tableroY >= 0 && tableroY < 20) {
+                if (tableroX >= 0 && tableroX < 10 && tableroY >= 0 && tableroY < 20)
+                {
                     tablero[tableroY][tableroX] = p->color; // Guardamos su color real
                 }
             }
@@ -164,26 +193,33 @@ void fijar_pieza(tPieza *p, int **tablero) {
     }
 }
 
-int comprobar_colision(int px, int py, int **matriz, int tam, int **tablero) {
-    for (int i = 0; i < tam; i++) {
-        for (int j = 0; j < tam; j++) {
+int comprobar_colision(int px, int py, int **matriz, int tam, int **tablero)
+{
+    for (int i = 0; i < tam; i++)
+    {
+        for (int j = 0; j < tam; j++)
+        {
             // Verificamos si la celda del molde del tetramino tiene un bloque (distinto de 0)
-            if (matriz[i][j] != 0) {
+            if (matriz[i][j] != 0)
+            {
                 int tableroX = px + j;
                 int tableroY = py + i;
 
                 // 1. Validamos límites laterales e inferiores absolutos de la grilla (10x20)
-                if (tableroX < 0 || tableroX >= 10 || tableroY >= 20) {
+                if (tableroX < 0 || tableroX >= 10 || tableroY >= 20)
+                {
                     return 1; // Colisión con bordes o con el fondo del pozo
                 }
 
                 // 2. Si la pieza está naciendo arriba de todo (Y negativo), no testea bloques fijos
-                if (tableroY < 0) {
+                if (tableroY < 0)
+                {
                     continue;
                 }
 
                 // 3. Validamos si esa posición ya está ocupada por otra pieza fija
-                if (tablero[tableroY][tableroX] != 0) {
+                if (tablero[tableroY][tableroX] != 0)
+                {
                     return 1; // Colisión contra bloque estático
                 }
             }
@@ -239,14 +275,47 @@ void rotar_pieza(tPieza *p, int **tablero)
     }
 }
 
+int obtenerPiezaAleatoria()
+{
+
+    static int bolsaTetrominos[7] = {0, 1, 2, 3, 4, 5, 6};
+    static int indiceBolsa = 7; // Arranca en 7 para forzar la primera mezcla
+    // Si ya sacamos las 7 piezas, rellenamos la bolsa y la volvemos a mezclar
+    if (indiceBolsa >= 7)
+    {
+        // Reiniciamos los tipos de pieza (0 a 6)
+        for (int i = 0; i < 7; i++)
+        {
+            bolsaTetrominos[i] = i;
+        }
+
+        // Algoritmo de mezcla aleatoria pura (Fisher-Yates)
+        for (int i = 6; i > 0; i--)
+        {
+            int j = rand() % (i + 1);
+            // Intercambiamos los valores
+            int aux = bolsaTetrominos[i];
+            bolsaTetrominos[i] = bolsaTetrominos[j];
+            bolsaTetrominos[j] = aux;
+        }
+
+        indiceBolsa = 0; // Reseteamos el índice para empezar a sacar de la nueva bolsa
+    }
+
+    // Sacamos la pieza actual y sumamos uno al índice para la próxima
+    int tipoPieza = bolsaTetrominos[indiceBolsa];
+    indiceBolsa++;
+
+    return tipoPieza;
+}
 
 void crearPieza(tPieza *p)
 {
-    int tipo = rand()%7;
+    int tipo = obtenerPiezaAleatoria();
     //int num=0;
     p->num = tipo;
 
-   switch(p->num)
+    switch(p->num)
     {
     case 0: // Barra (I)
         p->color = 11;
@@ -330,41 +399,53 @@ int verificar_y_limpiar_lineas_punteros(int **tablero, int ancho, int alto, tJue
     int hay_lineas = 0;
 
     // 1. PRIMER PASO: Detectar y marcar qué filas están llenas
-    for (int f = 19; f >= 0; f--) {
+    for (int f = 19; f >= 0; f--)
+    {
         int fila_completa = 1;
-        for (int c = 0; c < 10; c++) {
-            if (tablero[f][c] == 0) {
+        for (int c = 0; c < 10; c++)
+        {
+            if (tablero[f][c] == 0)
+            {
                 fila_completa = 0;
                 break;
             }
         }
-        if (fila_completa) {
+        if (fila_completa)
+        {
             filas_a_animar[f] = 1; // Marcamos que la fila 'f' debe parpadear
             hay_lineas = 1;
         }
     }
 
     // Si no hay ninguna línea completa, salimos rápido sin perder tiempo
-    if (!hay_lineas) {
+    if (!hay_lineas)
+    {
         return 0;
     }
 
     // 2. SEGUNDO PASO: Efecto visual de parpadeo
     // Guardamos una copia temporal de los colores originales de esas filas para el parpadeo
     int copia_colores[20][10];
-    for (int f = 0; f < 20; f++) {
-        if (filas_a_animar[f]) {
-            for (int c = 0; c < 10; c++) {
+    for (int f = 0; f < 20; f++)
+    {
+        if (filas_a_animar[f])
+        {
+            for (int c = 0; c < 10; c++)
+            {
                 copia_colores[f][c] = tablero[f][c];
             }
         }
     }
 
-    for (int parpadeo = 0; parpadeo < 3; parpadeo++) {
+    for (int parpadeo = 0; parpadeo < 3; parpadeo++)
+    {
         // FASE A: Pintar de BLANCO
-        for (int f = 0; f < 20; f++) {
-            if (filas_a_animar[f]) {
-                for (int c = 0; c < 10; c++) {
+        for (int f = 0; f < 20; f++)
+        {
+            if (filas_a_animar[f])
+            {
+                for (int c = 0; c < 10; c++)
+                {
                     tablero[f][c] = 7;
                 }
             }
@@ -376,9 +457,12 @@ int verificar_y_limpiar_lineas_punteros(int **tablero, int ancho, int alto, tJue
         gbt_esperar(80);
 
         // FASE B: Pintar de NEGRO (Color 0) para simular el apagado
-        for (int f = 0; f < 20; f++) {
-            if (filas_a_animar[f]) {
-                for (int c = 0; c < 10; c++) {
+        for (int f = 0; f < 20; f++)
+        {
+            if (filas_a_animar[f])
+            {
+                for (int c = 0; c < 10; c++)
+                {
                     tablero[f][c] = 0;
                 }
             }
@@ -390,28 +474,35 @@ int verificar_y_limpiar_lineas_punteros(int **tablero, int ancho, int alto, tJue
     }
 
     // Restauramos los colores originales antes del procesamiento lógico por punteros
-    for (int f = 0; f < 20; f++) {
-        if (filas_a_animar[f]) {
-            for (int c = 0; c < 10; c++) {
+    for (int f = 0; f < 20; f++)
+    {
+        if (filas_a_animar[f])
+        {
+            for (int c = 0; c < 10; c++)
+            {
                 tablero[f][c] = copia_colores[f][c];
             }
         }
     }
 
     // 3. TERCER PASO: El borrado físico real intercambiando los punteros
-    for (int f = 19; f >= 0; f--) {
-        if (filas_a_animar[f]) {
+    for (int f = 19; f >= 0; f--)
+    {
+        if (filas_a_animar[f])
+        {
             lineas_eliminadas++;
 
             int *fila_a_vaciar = tablero[f];
 
             // Vaciamos los datos de esa fila
-            for (int c = 0; c < 10; c++) {
+            for (int c = 0; c < 10; c++)
+            {
                 fila_a_vaciar[c] = 0;
             }
 
             // Desplazamos los punteros de las filas superiores hacia abajo
-            for (int k = f; k > 0; k--) {
+            for (int k = f; k > 0; k--)
+            {
                 tablero[k] = tablero[k - 1];
             }
 
@@ -420,7 +511,8 @@ int verificar_y_limpiar_lineas_punteros(int **tablero, int ancho, int alto, tJue
 
             // Como los punteros se movieron, también tenemos que desplazar el
             // array de marcas "filas_a_animar" para que sigan coincidiendo los índices
-            for (int k = f; k > 0; k--) {
+            for (int k = f; k > 0; k--)
+            {
                 filas_a_animar[k] = filas_a_animar[k - 1];
             }
             filas_a_animar[0] = 0;
@@ -428,6 +520,20 @@ int verificar_y_limpiar_lineas_punteros(int **tablero, int ancho, int alto, tJue
 
             f++;
         }
+    }
+
+    if (lineas_eliminadas > 0)
+    {
+        int puntosBase = 0;
+        if (lineas_eliminadas == 1) puntosBase = 100;
+        else if (lineas_eliminadas == 2) puntosBase = 300;
+        else if (lineas_eliminadas == 3) puntosBase = 500;
+        else if (lineas_eliminadas == 4) puntosBase = 800;
+
+        float multiplicadorVelocidad = 1.0f / juego->velocidad_actual;
+
+        // ¡CRÍTICO!: Modificar usando el puntero
+        juego->puntaje += (int)(puntosBase * multiplicadorVelocidad);
     }
 
     return lineas_eliminadas;
